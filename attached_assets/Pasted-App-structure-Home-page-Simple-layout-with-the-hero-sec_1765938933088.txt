@@ -1,0 +1,69 @@
+App structure:
+
+
+
+
+
+Home page: Simple layout with the hero section at the top. Below it, a section explaining how it works (steps: 1. Create event as host, 2. Add participants via email, 3. Automatic matching, 4. Manage wishlists and gifts, 5. Event wrap-up with personalized cards). Then an FAQ section with accordion-style questions (e.g., "What is Secret Santa?", "How does matching work?", "Is it free?"). End with a CTA button: "PLAY NOW" or "Crear tu primer intercambio" in red, leading to the new exchange creation.
+
+
+
+Authentication: Simple email-based login/signup. No passwords; use magic links sent via email for simplicity (simulate email sending in console or use a placeholder API).
+
+
+
+User roles:
+
+
+
+
+
+Host: Also a participant, can admin the event (view all matches, end event).
+
+
+
+Participant: Invited via email, can accept invite, create wishlist, view their assigned Santa match (the person they gift to).
+
+
+
+New Exchange flow (after clicking PLAY NOW):
+
+
+
+
+
+Form for host: Event name, host name, host email.
+
+
+
+Add participants: Dynamic form to add multiple guests with name + email fields. Button to send invites (simulate sending emails that include a join link).
+
+
+
+Once set up, generate unique event ID and perform random matching (ensure no self-matches, use JS to shuffle assignments).
+
+
+
+Participant dashboard (after accepting invite):
+
+
+
+
+
+Create/edit wishlist: List of items with add/remove, perhaps with gift ideas or links.
+
+
+
+View Santa match: Reveal the person they are gifting to (e.g., "Your Secret Santa target is [Name]").
+
+
+
+After event ends (host triggers): Generate and share a personalized "Wrapped" card – a downloadable image/PDF summarizing the event (e.g., "You gifted to [Name]", fun stats like total gifts, holiday theme). Use canvas or a library for generation.
+
+
+
+Backend: Use Replit's built-in database (like Repl DB) to store events, users, matches, wishlists. Handle CRUD operations with JS.
+
+
+
+Make it responsive for mobile/desktop. Add subtle animations for buttons and reveals.
