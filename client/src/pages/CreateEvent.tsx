@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Participant {
   name: string;
@@ -28,6 +29,7 @@ export default function CreateEvent() {
   const [step, setStep] = useState(1);
   const [eventName, setEventName] = useState("");
   const [date, setDate] = useState<Date>();
+  const [hostParticipates, setHostParticipates] = useState(true);
 
   const [participants, setParticipants] = useState<Participant[]>([{ name: "", email: "" }]);
   const [createdEventId, setCreatedEventId] = useState<string | null>(null);
@@ -51,6 +53,7 @@ export default function CreateEvent() {
           hostName: user.nickname,
           hostEmail: user.email || user.username, // Fallback to username if email is missing
           hostUserId: user.id,
+          hostParticipates: hostParticipates,
           endDate: date ? date.toISOString() : undefined
         }),
       });
@@ -163,8 +166,25 @@ export default function CreateEvent() {
         <div className="flex justify-center mb-12">
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex items-center">
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-300 ${step >= s ? "bg-holiday-red text-white shadow-lg scale-110" : "bg-white/10 text-white/30"
-                }`}>
+              <div
+                className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-300 ${step >= s
+                    ? "bg-holiday-red text-white shadow-lg scale-110"
+                    : "bg-white/10 text-white/30"
+                  } ${s <= step && (s === 1 || (s === 2 && step >= 2))
+                    ? "cursor-pointer hover:scale-125 hover:shadow-xl"
+                    : "cursor-default"
+                  }`}
+                onClick={() => {
+                  // Allow going back to step 1 from any step
+                  if (s === 1 && step >= 1) {
+                    setStep(1);
+                  }
+                  // Allow going to step 2 if we've created an event (step >= 2)
+                  if (s === 2 && step >= 2 && createdEventId) {
+                    setStep(2);
+                  }
+                }}
+              >
                 {s}
               </div>
               {s < 3 && <div className={`w-20 h-1 transition-all duration-500 ${step > s ? "bg-holiday-red" : "bg-white/10"}`} />}
@@ -221,6 +241,30 @@ export default function CreateEvent() {
                         />
                       </PopoverContent>
                     </Popover>
+                  </div>
+
+                  <div className="space-y-3 mt-6 p-4 bg-white/5 rounded-lg border border-white/10">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        id="hostParticipates"
+                        checked={hostParticipates}
+                        onCheckedChange={(checked) => setHostParticipates(checked as boolean)}
+                        className="mt-1 data-[state=checked]:bg-holiday-gold data-[state=checked]:border-holiday-gold"
+                      />
+                      <div className="flex-1">
+                        <Label
+                          htmlFor="hostParticipates"
+                          className="text-white text-base font-medium cursor-pointer"
+                        >
+                          Participate in exchange
+                        </Label>
+                        <p className="text-white/60 text-sm mt-1">
+                          {hostParticipates
+                            ? "You'll be assigned a Secret Santa and cannot see other matches"
+                            : "You won't participate but can see all matches as admin"}
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
                   <Button
@@ -293,7 +337,7 @@ export default function CreateEvent() {
                   <Button
                     variant="outline"
                     onClick={handleAddParticipant}
-                    className="w-full border-dashed border-white/30 text-white hover:bg-white/10 h-12 text-lg"
+                    className="w-full border-dashed border-white/30 text-white hover:bg-white/10 hover:text-white h-12 text-lg bg-transparent"
                   >
                     <Plus className="w-5 h-5 mr-2" />
                     Add Another Participant

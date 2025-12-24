@@ -25,6 +25,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
+import { Snow } from "@/components/Snow";
 
 const AVATARS = [
     "elf", "elf-girl", "santa", "reindeer", "cookie", "milk", "grinch", "candy-cane",
@@ -85,17 +86,18 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="min-h-screen bg-holiday-green p-8 flex flex-col items-center justify-center relative">
+        <div className="min-h-screen bg-holiday-green p-8 flex flex-col items-center justify-center relative overflow-hidden">
+            <Snow />
             <Button
                 variant="ghost"
                 onClick={() => navigate("/")}
-                className="absolute top-4 left-4 text-white hover:bg-white/10 hover:text-holiday-gold transition-colors"
+                className="absolute top-4 left-4 text-white hover:bg-white/10 hover:text-holiday-gold transition-colors z-10"
             >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Home
             </Button>
 
-            <Card className="w-full max-w-md bg-white/95 backdrop-blur">
+            <Card className="w-full max-w-md bg-white/95 backdrop-blur relative z-10">
                 <CardHeader>
                     <CardTitle className="text-2xl text-center text-holiday-green">
                         Edit Profile

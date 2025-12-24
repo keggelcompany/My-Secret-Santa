@@ -1,0 +1,246 @@
+# Canvas Generation - Secret Santa Wrapped Card
+
+## Ubicación del Código
+
+El canvas se genera en el archivo:
+📁 `d:\CONTRA-HolidayChallenge-Design\client\src\pages\EventView.tsx`
+
+## Función Principal
+
+La función que genera el canvas se llama `generateWrappedCard()` y se encuentra en las líneas 149-224.
+
+## Cómo Funciona
+
+1. **Referencia del Canvas** (línea 47):
+   ```tsx
+   const canvasRef = useRef<HTMLCanvasElement>(null);
+   ```
+
+2. **Elemento Canvas en el DOM** (línea 264):
+   ```tsx
+   <canvas ref={canvasRef} className="hidden" />
+   ```
+   El canvas está oculto con `className="hidden"` porque solo se usa para generar la imagen
+
+3. **Función de Generación** (líneas 149-224):
+   ```tsx
+   const generateWrappedCard = () => {
+     // Obtiene referencia al canvas
+     const canvas = canvasRef.current;
+     const ctx = canvas.getContext("2d");
+     
+     // Define dimensiones
+     canvas.width = 800;
+     canvas.height = 600;
+     
+     // Dibuja background con gradiente
+     // Dibuja círculos decorativos
+     // Dibuja texto con información del evento
+     // Genera descarga del PNG
+   }
+   ```
+
+## Contenido Actual del Canvas
+
+El canvas incluye:
+- **Background**: Gradiente verde (holiday-green → verde oscuro)
+- **Círculos decorativos**: Rojo y dorado
+- **Texto incluido**:
+  - "Secret Santa Wrapped" (título principal)
+  - Nombre del evento
+  - Nombre del participante
+  - "You gifted to: [nombre]"
+  - "Wishlist items created: [número]"
+  - "Total participants: [número]"
+  - "Event Status: Completed" (si el evento terminó)
+  - "Happy Holidays!" (despedida)
+  - "My Secret Santa" (firma)
+
+## Cómo Reemplazar con Canvas Personalizado
+
+### Opción 1: Modificar el Canvas Existente
+
+Edita la función `generateWrappedCard()` en `EventView.tsx` (líneas 149-224):
+
+```tsx
+const generateWrappedCard = () => {
+  const canvas = canvasRef.current;
+  if (!canvas || !joinData || !matchData) return;
+  
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  canvas.width = 800;  // Cambia las dimensiones si quieres
+  canvas.height = 600;
+
+  // AQUÍ ES DONDE PERSONALIZAS:
+  
+  // 1. Cambiar el background
+  ctx.fillStyle = "#TU_COLOR";
+  ctx.fillRect(0, 0, 800, 600);
+  
+  // 2. Agregar imágenes
+  const img = new Image();
+  img.src = "/ruta/a/tu/imagen.png";
+  img.onload = () => {
+    ctx.drawImage(img, x, y, width, height);
+  };
+  
+  // 3. Cambiar fuentes y textos
+  ctx.fillStyle = "white";
+  ctx.font = "bold 48px TuFuente, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Tu Texto Aquí", 400, 80);
+  
+  // 4. Agregar más elementos decorativos
+  // Círculos, líneas, formas, etc.
+  
+  // El resto permanece igual (descarga)
+  const link = document.createElement("a");
+  link.download = "nombre-archivo.png";
+  link.href = canvas.toDataURL("image/png");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+```
+
+### Opción 2: Usar una Imagen de Plantilla
+
+```tsx
+const generateWrappedCard = () => {
+  const canvas = canvasRef.current;
+  const ctx = canvas.getContext("2d");
+  
+  canvas.width = 800;
+  canvas.height = 600;
+
+  // Cargar tu plantilla personalizada
+  const template = new Image();
+  template.src = "/figmaAssets/wrapped-card-template.png";
+  
+  template.onload = () => {
+    // Dibuja la plantilla como fondo
+    ctx.drawImage(template, 0, 0, 800, 600);
+    
+    // Luego agrega el texto dinámico encima
+    ctx.fillStyle = "white";
+    ctx.font = "24px Jost";
+    ctx.textAlign = "center";
+    ctx.fillText(joinData.participant.name, 400, 200);
+    ctx.fillText(`Gifted to: ${matchData.name}`, 400, 280);
+    
+    // Continúa con la descarga...
+    const link = document.createElement("a");
+    link.download = "secret-santa-wrapped.png";
+    link.href = canvas.toDataURL("image/png");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+}
+```
+
+### Opción 3: Biblioteca de Diseño (html2canvas o similar)
+
+Si quieres diseñar el canvas como HTML/CSS y convertirlo:
+
+1. Instala: `npm install html2canvas`
+2. Crea tu diseño en HTML/CSS
+3. Convierte a canvas:
+
+```tsx
+import html2canvas from 'html2canvas';
+
+const generateWrappedCard = async () => {
+  const element = document.getElementById('wrapped-card-design');
+  const canvas = await html2canvas(element);
+  const link = document.createElement("a");
+  link.download = "wrapped-card.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+```
+
+## Datos Disponibles para Personalización
+
+Dentro de `generateWrappedCard()` tienes acceso a:
+- `joinData.event` - Información del evento (nombre, host, estado, etc.)
+- `joinData.participant` - Información del participante actual
+- `matchData` - Información de la persona a quien le toca regalar
+- `wishlistItems` - Array de items en la wishlist
+- `allParticipants` - Array de todos los participantes (si es host)
+
+## Ejemplo Completo de Personalización
+
+```tsx
+const generateWrappedCard = () => {
+  const canvas = canvasRef.current;
+  if (!canvas || !joinData || !matchData) return;
+  
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  // Dimensiones personalizadas
+  canvas.width = 1080;
+  canvas.height = 1920;
+
+  // Background con imagen
+  const bg = new Image();
+  bg.src = "/figmaAssets/custom-background.jpg";
+  bg.onload = () => {
+    ctx.drawImage(bg, 0, 0, 1080, 1920);
+    
+    // Overlay semitransparente
+    ctx.fillStyle = "rgba(31, 76, 52, 0.8)";
+    ctx.fillRect(0, 0, 1080, 1920);
+    
+    // Logo personalizado
+    const logo = new Image();
+    logo.src = "/figmaAssets/logo-1.png";
+    logo.onload = () => {
+      ctx.drawImage(logo, 490, 100, 100, 100);
+      
+      // Texto personalizado
+      ctx.fillStyle = "#FFD700";
+      ctx.font = "bold 72px Jost";
+      ctx.textAlign = "center";
+      ctx.fillText("🎄 Secret Santa 2024 🎄", 540, 300);
+      
+      ctx.fillStyle = "white";
+      ctx.font = "48px Jost";
+      ctx.fillText(joinData.event.name, 540, 400);
+      
+      ctx.font = "36px Jost";
+      ctx.fillText(`${joinData.participant.name}'s Summary`, 540, 500);
+      
+      ctx.font = "32px Jost";
+      ctx.fillText(`You gifted to: ${matchData.name}`, 540, 700);
+      ctx.fillText(`Wishlist items: ${wishlistItems.length}`, 540, 800);
+      
+      // Descarga
+      const link = document.createElement("a");
+      link.download = `${joinData.event.name}-wrapped.png`;
+      link.href = canvas.toDataURL("image/png");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+  };
+}
+```
+
+## Consejos
+
+1. **Prueba primero**: Cambia solo el background o un texto para probar
+2. **Usa imágenes locales**: Coloca tus imágenes en `/public/figmaAssets/`
+3. **Fuentes**: Asegúrate de que la fuente esté cargada en `index.css`
+4. **Dimensiones**: Ajusta canvas.width y canvas.height según tu diseño
+5. **Coordenadas**: Usa console.log para encontrar las posiciones exactas
+6. **Preview**: Puedes quitar `className="hidden"` temporalmente para ver el canvas
+
+## Recursos Útiles
+
+- Canvas API: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API
+- Dibujar imágenes: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+- Texto en canvas: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillText

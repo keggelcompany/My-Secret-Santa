@@ -19,6 +19,7 @@ export const events = pgTable("events", {
   hostName: text("host_name").notNull(),
   hostEmail: text("host_email").notNull(),
   hostUserId: integer("host_user_id").references(() => users.id), // Link to user if logged in
+  hostParticipates: boolean("host_participates"), // Whether host participates in the exchange - nullable for backward compatibility
   status: text("status").notNull().default("active"),
   endDate: timestamp("end_date"), // Added duration/end date
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -61,10 +62,13 @@ export const insertEventSchema = createInsertSchema(events).pick({
   hostName: true,
   hostEmail: true,
   hostUserId: true,
+  hostParticipates: true,
   endDate: true,
 }).extend({
   hostUserId: z.number().optional(),
+  hostParticipates: z.boolean().optional().nullable(),
   endDate: z.date().optional(),
+  hostEmail: z.string(), // Allow any string (username fallback)
 });
 
 export const insertParticipantSchema = createInsertSchema(participants).pick({

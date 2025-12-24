@@ -1,8 +1,10 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { db } from "./db";
 import { insertEventSchema, insertParticipantSchema, insertWishlistItemSchema } from "@shared/schema";
 import { z } from "zod";
+import { sql } from "drizzle-orm";
 
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
@@ -68,6 +70,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/health", async (req, res) => {
+    try {
+      console.log("[Health Check] Attempting to patch schema...");
+      // Force add column if missing (hack to fix schema mismatch)
+      await db.execute(sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS host_participates BOOLEAN`);
+      console.log("[Health Check] Applied schema fix: host_participates column");
+
+      const events = await storage.getEventsByUserId(0);
+      res.json({ status: "ok", message: "Database connected and schema patched", timestamp: new Date().toISOString() });
+    } catch (error) {
+      console.error("[Health Check] Database error:", error);
+      res.status(500).json({ status: "error", message: "Database connection failed", error: String(error) });
+    }
+  });
+
   app.get("/api/events/:id", async (req, res) => {
     const event = await storage.getEvent(req.params.id);
     if (!event) {
@@ -104,6 +121,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/events/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userId = (req.user as any).id;
+    const eventId = req.params.id;
+
+    try {
+      const event = await storage.getEvent(eventId);
+      if (!event) return res.status(404).json({ error: "Event not found" });
+
+      // Verify host
+      if (event.hostUserId !== userId) {
+        return res.status(403).json({ error: "Only the host can delete this event" });
+      }
+
+      // Manual cascade delete
+      const participants = await storage.getParticipantsByEvent(eventId);
+      console.log(`[DELETE /api/events/${eventId}] Found ${participants.length} participants`);
+
+      // 1. Delete wishlist items
+      let wishlistCount = 0;
+      for (const p of participants) {
+        const result = await db.execute(sql`DELETE FROM wishlist_items WHERE participant_id = ${p.id}`);
+        wishlistCount += result.rowsAffected || 0;
+      }
+      console.log(`[DELETE /api/events/${eventId}] Deleted ${wishlistCount} wishlist items`);
+
+      // 2. Delete participants
+      const participantsResult = await db.execute(sql`DELETE FROM participants WHERE event_id = ${eventId}`);
+      console.log(`[DELETE /api/events/${eventId}] Deleted ${participantsResult.rowsAffected || 0} participants`);
+
+      // 3. Delete event
+      const eventResult = await db.execute(sql`DELETE FROM events WHERE id = ${eventId}`);
+      console.log(`[DELETE /api/events/${eventId}] Deleted ${eventResult.rowsAffected || 0} event(s)`);
+
+      // Verify deletion
+      const verifyEvent = await storage.getEvent(eventId);
+      if (verifyEvent) {
+        console.error(`[DELETE /api/events/${eventId}] ERROR: Event still exists!`);
+        return res.status(500).json({ error: "Verification failed" });
+      }
+
+      console.log(`[DELETE /api/events/${eventId}] Successfully deleted`);
+      res.json({
+        success: true,
+        deleted: {
+          event: eventResult.rowsAffected || 0,
+          participants: participantsResult.rowsAffected || 0,
+          wishlistItems: wishlistCount
+        }
+      });
+    } catch (error) {
+      console.error(`[DELETE /api/events/${eventId}] Error:`, error);
+      res.status(500).json({ error: "Failed to delete event" });
+    }
+  });
+
   app.patch("/api/user", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const userId = (req.user as any).id;
@@ -114,26 +187,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/user/events", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const userId = (req.user as any).id;
-    const hostedEvents = await storage.getEventsByUserId(userId);
-    const participations = await storage.getParticipationsByUserId(userId);
+    console.log(`[GET /api/user/events] Fetching events for userId: ${userId}`);
 
-    // Fetch event details for participations
-    const participatingEvents = await Promise.all(
-      participations.map(async (p) => {
-        const event = await storage.getEvent(p.eventId);
-        return { ...event, participantId: p.id, magicToken: p.magicToken };
-      })
-    );
+    try {
+      const hostedEvents = await storage.getEventsByUserId(userId);
+      console.log(`[GET /api/user/events] Found ${hostedEvents.length} hosted events`);
 
-    const hostedEventsWithToken = await Promise.all(
-      hostedEvents.map(async (event) => {
-        const participants = await storage.getParticipantsByEvent(event.id);
-        const hostParticipant = participants.find(p => p.isHost);
-        return { ...event, magicToken: hostParticipant?.magicToken };
-      })
-    );
+      const participations = await storage.getParticipationsByUserId(userId);
+      console.log(`[GET /api/user/events] Found ${participations.length} participations`);
 
-    res.json({ hosted: hostedEventsWithToken, participating: participatingEvents.filter(e => e.id) });
+      // Fetch event details for participations
+      const participatingEvents = await Promise.all(
+        participations.map(async (p) => {
+          const event = await storage.getEvent(p.eventId);
+          if (!event) console.warn(`[GET /api/user/events] Event not found for participation ${p.id} (eventId: ${p.eventId})`);
+          return { ...event, participantId: p.id, magicToken: p.magicToken };
+        })
+      );
+
+      const hostedEventsWithToken = await Promise.all(
+        hostedEvents.map(async (event) => {
+          const participants = await storage.getParticipantsByEvent(event.id);
+          const hostParticipant = participants.find(p => p.isHost);
+          if (!hostParticipant) console.warn(`[GET /api/user/events] Host participant not found for event ${event.id}`);
+          return { ...event, magicToken: hostParticipant?.magicToken };
+        })
+      );
+
+      // Filter out any null events from participatingEvents
+      const validParticipatingEvents = participatingEvents.filter(e => e !== null && e.id !== null && e.id !== undefined);
+
+      res.json({ hosted: hostedEventsWithToken, participating: validParticipatingEvents });
+    } catch (error) {
+      console.error("[GET /api/user/events] Error fetching events:", error);
+      res.status(500).json({ error: "Failed to fetch events" });
+    }
   });
 
   app.get("/api/events/:id/participants", async (req, res) => {
@@ -149,7 +237,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Need at least 2 participants to generate matches" });
       }
 
-      const participantIds = participants.map(p => p.id);
+      const event = await storage.getEvent(req.params.id);
+      if (!event) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+
+      // Filter participants based on host participation preference
+      let participantsToMatch = participants;
+
+      // If host does NOT participate (false), exclude them from matching
+      // If null/undefined (old event), we assume they participate (backward compatibility) or user choice?
+      // User said: "todos los eventos existentes automáticamente tendrán hostParticipates = true ... no me parece que este bien"
+      // But for matching, if they are already in the list, they are participants.
+      // The new logic: if hostParticipates is explicitly false, remove them.
+      if (event.hostParticipates === false) {
+        participantsToMatch = participants.filter(p => !p.isHost);
+      }
+
+      if (participantsToMatch.length < 2) {
+        return res.status(400).json({ error: "Need at least 2 participants to generate matches" });
+      }
+
+      const participantIds = participantsToMatch.map(p => p.id);
       const matches = generateMatches(participantIds);
 
       const matchEntries = Array.from(matches.entries());

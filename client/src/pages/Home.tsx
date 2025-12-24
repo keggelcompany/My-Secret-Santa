@@ -62,7 +62,7 @@ export default function Home() {
     const activeParticipating = userEvents.participating.find((e: any) => e.status === "active");
 
     if (activeHosted) {
-      heroButtonText = "Elves are packing gifts...";
+      heroButtonText = "Check Event Status";
       heroButtonAction = () => navigate(`/join/${activeHosted.magicToken}`);
     } else if (activeParticipating) {
       heroButtonText = "Who is your Secret Santa?";
@@ -90,7 +90,7 @@ export default function Home() {
                 <motion.img
                   src="/figmaAssets/santa-hat.png"
                   alt="Santa Hat"
-                  className="absolute -top-16 -left-8 md:-top-20 md:-left-12 w-28 md:w-40 h-auto z-30 pointer-events-none"
+                  className="absolute -top-16 -left-12 md:-top-20 md:-left-8 w-28 md:w-40 h-auto z-30 pointer-events-none"
                   animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 />
@@ -106,7 +106,7 @@ export default function Home() {
               <div className="flex flex-col md:flex-row gap-4 md:gap-6 mt-8 md:mt-12 justify-center lg:justify-start items-center">
                 <Button
                   onClick={heroButtonAction}
-                  className="w-full md:w-auto bg-holiday-red hover:bg-holiday-red/90 text-white rounded-full px-8 py-6 md:px-10 md:py-8 text-base md:text-lg font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all uppercase tracking-wider"
+                  className="w-full md:w-auto bg-holiday-red hover:bg-holiday-red/90 text-white rounded-full px-8 py-6 md:px-10 md:py-8 text-base md:text-lg font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all uppercase tracking-wider"
                 >
                   {heroButtonText}
                 </Button>

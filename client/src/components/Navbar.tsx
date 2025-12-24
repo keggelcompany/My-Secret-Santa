@@ -5,9 +5,10 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User } from "lucide-react";
+import { User, LogOut } from "lucide-react";
 
 export function Navbar() {
     const { user, logoutMutation } = useAuth();
@@ -22,7 +23,10 @@ export function Navbar() {
         <header className="fixed top-0 left-0 right-0 z-50 bg-white/5 backdrop-blur-md border-b border-white/10 pt-4 pb-4">
             <div className="container mx-auto px-4 flex items-center justify-between">
                 <Link href="/">
-                    <div className="flex items-center gap-3 cursor-pointer">
+                    <div
+                        className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    >
                         <img src="/figmaAssets/logo-1.png" alt="Logo" className="w-10 h-10 object-contain" />
                         <div className="flex flex-col">
                             <span className="text-white font-bold text-lg leading-none">My Secret</span>
@@ -32,8 +36,8 @@ export function Navbar() {
                 </Link>
 
                 <nav className="hidden md:flex items-center gap-8">
-                    <a href="/#how-it-works" className="text-white/90 hover:text-white transition-colors text-lg font-normal">How it Works</a>
-                    <a href="/#faq" className="text-white/90 hover:text-white transition-colors text-lg font-normal">FAQ</a>
+                    <a href="/#how-it-works" className="text-white/90 hover:text-holiday-gold hover:underline underline-offset-4 transition-all text-lg font-normal">How it Works</a>
+                    <a href="/#faq" className="text-white/90 hover:text-holiday-gold hover:underline underline-offset-4 transition-all text-lg font-normal">FAQ</a>
                 </nav>
 
                 <div className="flex items-center gap-4">
@@ -73,11 +77,20 @@ export function Navbar() {
                                         </span>
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="bg-white/95 backdrop-blur">
-                                    <DropdownMenuItem onClick={() => navigate("/profile")}>
+                                <DropdownMenuContent align="end" className="bg-white/95 backdrop-blur w-48">
+                                    <DropdownMenuItem
+                                        onClick={() => navigate("/profile")}
+                                        className="cursor-pointer hover:bg-holiday-green/10 py-2.5"
+                                    >
+                                        <User className="w-4 h-4 mr-2" />
                                         Profile
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={handleLogout}>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onClick={handleLogout}
+                                        className="cursor-pointer hover:bg-red-50 text-red-600 py-2.5"
+                                    >
+                                        <LogOut className="w-4 h-4 mr-2" />
                                         Logout
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
