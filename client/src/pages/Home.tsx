@@ -114,7 +114,7 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden">
+      <section className="relative min-h-screen flex items-center pt-32 pb-12 md:pb-20 overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
@@ -124,7 +124,7 @@ export default function Home() {
                 <motion.img
                   src="/figmaAssets/santa-hat.png"
                   alt="Santa Hat"
-                  className="absolute -top-16 -left-12 md:-top-20 md:-left-8 w-28 md:w-40 h-auto z-30 pointer-events-none"
+                  className="absolute -top-16 -left-4 md:-top-20 md:-left-8 w-28 md:w-40 h-auto z-30 pointer-events-none"
                   animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
                   transition={{
                     duration: 4,
@@ -133,7 +133,7 @@ export default function Home() {
                   }}
                 />
 
-                <h1 className="text-5xl md:text-6xl lg:text-9xl font-bold text-white leading-[0.9] tracking-tight mb-8 drop-shadow-lg relative z-20 md:translate-x-6">
+                <h1 className="text-6xl md:text-7xl lg:text-9xl font-bold text-white leading-[0.9] tracking-tight mb-8 drop-shadow-lg relative z-20 md:translate-x-6">
                   <span className="block">Santa</span>
                   <span className="block">Claus is</span>
                   <span className="block">coming</span>
@@ -205,7 +205,7 @@ export default function Home() {
 
       <section
         id="how-it-works"
-        className="py-24 bg-holiday-green relative mt-20"
+        className="py-24 bg-holiday-green relative mt-0 md:mt-20"
       >
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="container mx-auto px-4 relative z-10">
