@@ -19,6 +19,7 @@ interface Participant {
   hasAccepted: boolean;
   magicToken: string;
   assignedToId: string | null;
+  avatar?: string;
 }
 
 interface Event {
@@ -51,7 +52,7 @@ export default function EventView() {
     queryFn: async () => {
       const res = await fetch(`/api/join/${params?.token}`);
       if (!res.ok) throw new Error("Invalid invite");
-      return res.json() as Promise<{ participant: Participant; event: Event }>;
+      return res.json() as Promise<{ participant: Participant; event: Event; participantCount: number }>;
     },
     enabled: !!params?.token,
   });
@@ -160,63 +161,169 @@ export default function EventView() {
         return;
       }
 
-      canvas.width = 800;
-      canvas.height = 600;
+      // Set canvas dimensions for vertical story format
+      canvas.width = 1080;
+      canvas.height = 1920;
 
-      // Background
-      const gradient = ctx.createLinearGradient(0, 0, 800, 600);
-      gradient.addColorStop(0, "#1F4C34"); // holiday-green
-      gradient.addColorStop(1, "#0f2518"); // darker green
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 800, 600);
+      // Load assets
+      const background = new Image();
+      const character = new Image();
+      
+      let backgroundLoaded = false;
 
-      // Decorative circles
-      ctx.fillStyle = "#D83F31"; // holiday-red
-      ctx.beginPath();
-      ctx.arc(700, 100, 80, 0, Math.PI * 2);
-      ctx.fill();
+      // Wait for images to load
+      let loadedImages = 0;
+      const totalImages = 2;
 
-      ctx.fillStyle = "#D3AF64"; // holiday-gold
-      ctx.beginPath();
-      ctx.arc(100, 500, 60, 0, Math.PI * 2);
-      ctx.fill();
+      const onImageLoad = () => {
+        loadedImages++;
+        if (loadedImages === totalImages) {
+          drawCanvas();
+        }
+      };
 
-      // Text
-      ctx.fillStyle = "white";
-      ctx.font = "bold 48px Jost, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("Secret Santa Wrapped", 400, 80);
+      background.onload = () => {
+        backgroundLoaded = true;
+        onImageLoad();
+      };
 
-      ctx.font = "bold 32px Jost, sans-serif";
-      ctx.fillText(joinData.event.name, 400, 140);
+      background.onerror = () => {
+        console.error("Failed to load background");
+        toast({ title: "Warning", description: "Background image failed to load", variant: "destructive" });
+        backgroundLoaded = false;
+        onImageLoad(); // Proceed anyway
+      };
 
-      ctx.font = "24px Jost, sans-serif";
-      ctx.fillStyle = "#D3AF64";
-      ctx.fillText(`${joinData.participant.name}'s Summary`, 400, 200);
+      character.onload = onImageLoad;
 
-      ctx.fillStyle = "white";
-      ctx.font = "20px Jost, sans-serif";
-      ctx.fillText(`You gifted to: ${matchData.name}`, 400, 280);
-      ctx.fillText(`Wishlist items created: ${wishlistItems.length}`, 400, 320);
-      ctx.fillText(`Total participants: ${allParticipants.length || "?"}`, 400, 360);
+      character.onerror = () => {
+        console.error("Failed to load character:", character.src);
+        onImageLoad(); // Proceed without character
+      };
 
-      ctx.font = "bold 28px Jost, sans-serif";
-      ctx.fillStyle = "#D83F31";
-      ctx.fillText("Happy Holidays!", 400, 480);
+      // Set src AFTER handlers are defined
+      background.src = "/figmaAssets/Wrapped-background.png";
+      
+      // Map avatar keys to PNG filenames
+      const AVATAR_TO_PNG: Record<string, string> = {
+        "elf": "ELF.png",
+        "elf-girl": "ELF-GIRL.png",
+        "santa": "SANTA.png",
+        "reindeer": "REINDEER.png",
+        "cookie": "COOKIE.png",
+        "milk": "MILK.png",
+        "grinch": "GRINCH.png",
+        "candy-cane": "CANDY.png",
+        "snowman": "SNOWMAN.png",
+        "stocking": "STOCKING.png",
+        "nutcracker": "NUTCRACKER.png",
+        "star": "STAR.png",
+        "ornament": "ORNAMENT.png",
+        "tree": "TREE.png",
+        "fireworks": "FIREWORKS.png",
+        "champagne": "CHAMPAGNE.png",
+        "scarf": "SCARF.png",
+        "hat": "HAT.png",
+        "gift": "GIFT.png",
+        "sleigh": "SLEIGH.png",
+      };
 
-      ctx.font = "16px Jost, sans-serif";
-      ctx.fillStyle = "rgba(255,255,255,0.5)";
-      ctx.fillText("My Secret Santa", 400, 560);
+      const avatarName = joinData.participant.avatar || "elf";
+      const characterFileName = AVATAR_TO_PNG[avatarName] || "ELF.png";
+      console.log(`[Canvas] Avatar from participant: "${avatarName}", PNG file: "${characterFileName}"`);
+      character.src = `/figmaAssets/Characters/${characterFileName}`;
 
-      const link = document.createElement("a");
-      const fileName = `secret-santa-wrapped-${(joinData.event.name || "event").replace(/[^a-z0-9]/gi, "-").toLowerCase()}.png`;
-      link.download = fileName;
-      link.href = canvas.toDataURL("image/png");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const drawCanvas = () => {
+        // 1. Draw Background
+        if (backgroundLoaded && background.complete && background.naturalWidth !== 0) {
+          try {
+            ctx.drawImage(background, 0, 0, 1080, 1920);
+          } catch (e) {
+            console.error("Error drawing background:", e);
+            // Fallback if draw fails despite checks
+            ctx.fillStyle = "#1F4C34";
+            ctx.fillRect(0, 0, 1080, 1920);
+          }
+        } else {
+           // Fallback background
+           ctx.fillStyle = "#1F4C34";
+           ctx.fillRect(0, 0, 1080, 1920);
+        }
 
-      toast({ title: "Downloaded!", description: "Your Wrapped card has been saved." });
+        // 2. Draw Character (Avatar)
+        // Position: Centered in the black square area. 
+        const charWidth = 600; 
+        const charHeight = 600;
+        const charX = (1080 - charWidth) / 2; 
+        const charY = 230; // Centered in the black square area
+        
+        console.log("Drawing character at:", { charX, charY, charWidth, charHeight });
+        
+        if (character.complete && character.naturalWidth !== 0) {
+             // Maintain aspect ratio if needed, but for now fit to box
+             ctx.drawImage(character, charX, charY, charWidth, charHeight);
+        } else {
+            // Fallback: Draw emoji if image failed
+            ctx.font = "200px serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            // We don't have the emoji map here easily accessible without importing, 
+            // but we can try to render the text avatar name as fallback
+            ctx.fillStyle = "white";
+            ctx.fillText("?", 1080/2, 780);
+        }
+
+        // 3. Draw Text
+        ctx.textAlign = "center";
+        
+        // Font setup
+        const mainFont = "bold 60px 'Druk Wide Bold', 'Jost', sans-serif";
+        const secondaryFont = "40px 'Druk Wide Bold', 'Jost', sans-serif";
+        const smallFont = "30px 'Druk Wide Bold', 'Jost', sans-serif";
+
+        // Participant Name
+        ctx.font = mainFont;
+        ctx.fillStyle = "#FFFFFF"; 
+        ctx.fillText(joinData.participant.name.toUpperCase(), 1080 / 2, 1250);
+
+        // Secret Santa (Who they gifted to)
+        ctx.font = secondaryFont;
+        ctx.fillStyle = "#D3AF64"; // Gold
+        ctx.fillText(`YOU GIFTED TO:`, 1080 / 2, 1350);
+        
+        ctx.font = mainFont;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(matchData.name.toUpperCase(), 1080 / 2, 1420);
+
+        // Stats
+        ctx.font = smallFont;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.textAlign = "left";
+        
+        // Adjust positions for stats - assuming they might be in a list or grid
+        // Let's put them near the bottom
+        const statsY = 1600;
+        const col1X = 150;
+        const col2X = 600;
+
+        ctx.fillText(`WISHLIST ITEMS:`, col1X, statsY);
+        ctx.fillText(wishlistItems.length.toString(), col1X + 350, statsY);
+
+        ctx.fillText(`PARTICIPANTS:`, col1X, statsY + 80);
+        ctx.fillText((joinData.participantCount || "?").toString(), col1X + 350, statsY + 80);
+
+        // Download
+        const link = document.createElement("a");
+        const fileName = `secret-santa-wrapped-${(joinData.event.name || "event").replace(/[^a-z0-9]/gi, "-").toLowerCase()}.png`;
+        link.download = fileName;
+        link.href = canvas.toDataURL("image/png");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        toast({ title: "Downloaded!", description: "Your Wrapped card has been saved." });
+      };
+
     } catch (error) {
       console.error("Error generating wrapped card:", error);
       toast({ title: "Error", description: "Failed to generate wrapped card", variant: "destructive" });

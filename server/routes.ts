@@ -54,6 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const hostParticipant = await storage.createParticipant({
         eventId: event.id,
+        userId: eventData.hostUserId, // Link to authenticated user
         name: eventData.hostName,
         email: eventData.hostEmail,
         isHost: true,
@@ -143,17 +144,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let wishlistCount = 0;
       for (const p of participants) {
         const result = await db.execute(sql`DELETE FROM wishlist_items WHERE participant_id = ${p.id}`);
-        wishlistCount += result.rowsAffected || 0;
+        wishlistCount += result.rowCount || 0;
       }
       console.log(`[DELETE /api/events/${eventId}] Deleted ${wishlistCount} wishlist items`);
 
       // 2. Delete participants
       const participantsResult = await db.execute(sql`DELETE FROM participants WHERE event_id = ${eventId}`);
-      console.log(`[DELETE /api/events/${eventId}] Deleted ${participantsResult.rowsAffected || 0} participants`);
+      console.log(`[DELETE /api/events/${eventId}] Deleted ${participantsResult.rowCount || 0} participants`);
 
       // 3. Delete event
       const eventResult = await db.execute(sql`DELETE FROM events WHERE id = ${eventId}`);
-      console.log(`[DELETE /api/events/${eventId}] Deleted ${eventResult.rowsAffected || 0} event(s)`);
+      console.log(`[DELETE /api/events/${eventId}] Deleted ${eventResult.rowCount || 0} event(s)`);
 
       // Verify deletion
       const verifyEvent = await storage.getEvent(eventId);
@@ -166,8 +167,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         success: true,
         deleted: {
-          event: eventResult.rowsAffected || 0,
-          participants: participantsResult.rowsAffected || 0,
+          event: eventResult.rowCount || 0,
+          participants: participantsResult.rowCount || 0,
           wishlistItems: wishlistCount
         }
       });
@@ -282,19 +283,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/join/:token", async (req, res) => {
+    console.log(`[GET /api/join/:token] ===== START =====`);
+    console.log(`[GET /api/join/:token] Token: ${req.params.token}`);
+    console.log(`[GET /api/join/:token] Is authenticated: ${req.isAuthenticated()}`);
+    console.log(`[GET /api/join/:token] User:`, req.user);
+    
     const participant = await storage.getParticipantByToken(req.params.token);
     if (!participant) {
       return res.status(404).json({ error: "Invalid invite link" });
     }
+    
+    console.log(`[GET /api/join/:token] Participant BEFORE linking:`, participant);
+
+    // If user is authenticated and participant doesn't have a userId, link them automatically
+    if (req.isAuthenticated() && !participant.userId) {
+      const userId = (req.user as any).id;
+      console.log(`[GET /api/join/:token] Auto-linking participant ${participant.id} to user ${userId}`);
+      await storage.updateParticipantUser(participant.id, userId);
+      // Update the participant object so the avatar is fetched correctly below
+      participant.userId = userId;
+      console.log(`[GET /api/join/:token] Participant AFTER linking:`, participant);
+    }
 
     const event = await storage.getEvent(participant.eventId);
-    res.json({ participant, event });
+    const participants = await storage.getParticipantsByEvent(participant.eventId);
+
+    let avatar = "elf";
+    console.log(`[GET /api/join/:token] Participant userId: ${participant.userId}`);
+    if (participant.userId) {
+      const user = await storage.getUser(participant.userId);
+      console.log(`[GET /api/join/:token] User found:`, user);
+      if (user) {
+        avatar = user.avatar;
+        console.log(`[GET /api/join/:token] Avatar from user: ${avatar}`);
+      }
+    } else {
+      console.log(`[GET /api/join/:token] No userId, using default avatar: ${avatar}`);
+    }
+    
+    console.log(`[GET /api/join/:token] Final avatar being sent: ${avatar}`);
+    console.log(`[GET /api/join/:token] ===== END =====`);
+
+    res.json({ participant: { ...participant, avatar }, event, participantCount: participants.length });
   });
 
   app.post("/api/join/:token/accept", async (req, res) => {
     const participant = await storage.getParticipantByToken(req.params.token);
     if (!participant) {
       return res.status(404).json({ error: "Invalid invite link" });
+    }
+
+    // If user is authenticated and participant doesn't have a userId, link them
+    if (req.isAuthenticated() && !participant.userId) {
+      const userId = (req.user as any).id;
+      console.log(`[POST /api/join/:token/accept] Linking participant ${participant.id} to user ${userId}`);
+      await storage.updateParticipantUser(participant.id, userId);
     }
 
     const updated = await storage.updateParticipantAccepted(participant.id);

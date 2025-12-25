@@ -43,6 +43,7 @@ export interface IStorage {
   getParticipantByToken(token: string): Promise<Participant | undefined>;
   getParticipantsByEvent(eventId: string): Promise<Participant[]>;
   updateParticipantAccepted(id: string): Promise<Participant | undefined>;
+  updateParticipantUser(id: string, userId: number): Promise<Participant | undefined>;
   assignSantaMatch(id: string, assignedToId: string): Promise<Participant | undefined>;
 
   createWishlistItem(item: InsertWishlistItem): Promise<WishlistItem>;
@@ -183,6 +184,15 @@ export class DatabaseStorage implements IStorage {
     const [participant] = await db
       .update(participants)
       .set({ hasAccepted: true })
+      .where(eq(participants.id, id))
+      .returning();
+    return participant;
+  }
+
+  async updateParticipantUser(id: string, userId: number): Promise<Participant | undefined> {
+    const [participant] = await db
+      .update(participants)
+      .set({ userId })
       .where(eq(participants.id, id))
       .returning();
     return participant;
