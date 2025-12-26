@@ -27,11 +27,28 @@ import { Loader2, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
 import { Snow } from "@/components/Snow";
 
-const AVATARS = [
-    "elf", "elf-girl", "santa", "reindeer", "cookie", "milk", "grinch", "candy-cane",
-    "snowman", "stocking", "nutcracker", "star", "ornament", "tree", "fireworks",
-    "champagne", "scarf", "hat", "gift", "sleigh"
-];
+const AVATAR_MAP: Record<string, string> = {
+  elf: "/figmaAssets/Emojis-editados/Elf.png",
+  "elf-girl": "/figmaAssets/Emojis-editados/Elf-Girl.png",
+  santa: "/figmaAssets/Emojis-editados/Santa.png",
+  reindeer: "/figmaAssets/Emojis-editados/Reindeer.png",
+  cookie: "/figmaAssets/Emojis-editados/Cookie.png",
+  milk: "/figmaAssets/Emojis-editados/Milk.png",
+  grinch: "/figmaAssets/Emojis-editados/Grinch.png",
+  "candy-cane": "/figmaAssets/Emojis-editados/Candy.png",
+  snowman: "/figmaAssets/Emojis-editados/Snowman.png",
+  stocking: "/figmaAssets/Emojis-editados/stocking.png",
+  nutcracker: "/figmaAssets/Emojis-editados/Nutcracker.png",
+  star: "/figmaAssets/Emojis-editados/Star.png",
+  ornament: "/figmaAssets/Emojis-editados/Ornament.png",
+  tree: "/figmaAssets/Emojis-editados/Tree.png",
+  fireworks: "/figmaAssets/Emojis-editados/Fireworks.png",
+  champagne: "/figmaAssets/Emojis-editados/Champagne.png",
+  scarf: "/figmaAssets/Emojis-editados/Scarf.png",
+  hat: "/figmaAssets/Emojis-editados/Hat.png",
+  gift: "/figmaAssets/Emojis-editados/Gift.png",
+  sleigh: "/figmaAssets/Emojis-editados/Sleigh.png",
+};
 
 const updateProfileSchema = z.object({
     nickname: z.string().min(1, "Nickname is required"),
@@ -128,49 +145,50 @@ export default function ProfilePage() {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Choose your Avatar</FormLabel>
-                                        <ScrollArea className="h-[200px] border rounded-md p-4">
-                                            <RadioGroup
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                                className="grid grid-cols-3 gap-4"
-                                            >
-                                                {AVATARS.map((avatar) => (
-                                                    <FormItem key={avatar}>
-                                                        <FormControl>
-                                                            <RadioGroupItem
-                                                                value={avatar}
-                                                                className="sr-only peer"
-                                                            />
-                                                        </FormControl>
-                                                        <FormLabel className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
-                                                            <span className="text-2xl mb-2">
-                                                                {avatar === "elf" && "🧝"}
-                                                                {avatar === "elf-girl" && "🧝‍♀️"}
-                                                                {avatar === "santa" && "🎅"}
-                                                                {avatar === "reindeer" && "🦌"}
-                                                                {avatar === "cookie" && "🍪"}
-                                                                {avatar === "milk" && "🥛"}
-                                                                {avatar === "grinch" && "🤢"}
-                                                                {avatar === "candy-cane" && "🍬"}
-                                                                {avatar === "snowman" && "⛄"}
-                                                                {avatar === "stocking" && "🧦"}
-                                                                {avatar === "nutcracker" && "💂"}
-                                                                {avatar === "star" && "⭐"}
-                                                                {avatar === "ornament" && "🔮"}
-                                                                {avatar === "tree" && "🎄"}
-                                                                {avatar === "fireworks" && "🎆"}
-                                                                {avatar === "champagne" && "🥂"}
-                                                                {avatar === "scarf" && "🧣"}
-                                                                {avatar === "hat" && "🧢"}
-                                                                {avatar === "gift" && "🎁"}
-                                                                {avatar === "sleigh" && "🛷"}
-                                                            </span>
-                                                            <span className="text-xs capitalize">{avatar}</span>
-                                                        </FormLabel>
-                                                    </FormItem>
-                                                ))}
-                                            </RadioGroup>
-                                        </ScrollArea>
+                                        <div className="h-[240px] border rounded-md bg-[#fefefe] overflow-y-auto custom-scrollbar">
+                                            <div className="p-4">
+                                                <RadioGroup
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                    className="grid grid-cols-4 gap-3"
+                                                >
+                                                    {Object.keys(AVATAR_MAP).map((avatar) => (
+                                                        <FormItem key={avatar} className="space-y-0">
+                                                            <FormControl>
+                                                                <RadioGroupItem
+                                                                    value={avatar}
+                                                                    className="sr-only"
+                                                                />
+                                                            </FormControl>
+                                                            <FormLabel
+                                                                className={`flex flex-col items-center justify-center rounded-lg p-2 transition-all cursor-pointer hover:scale-105 h-full ${
+                                                                    field.value === avatar
+                                                                        ? "bg-holiday-red/20"
+                                                                        : "bg-transparent"
+                                                                }`}
+                                                            >
+                                                                <span className="mb-1 opacity-100">
+                                                                    <img 
+                                                                        src={AVATAR_MAP[avatar]} 
+                                                                        alt={avatar} 
+                                                                        className="w-8 h-8 object-contain" 
+                                                                    />
+                                                                </span>
+                                                                <span
+                                                                    className={`text-[10px] capitalize font-medium ${
+                                                                        field.value === avatar
+                                                                            ? "text-holiday-red"
+                                                                            : "text-muted-foreground"
+                                                                    }`}
+                                                                >
+                                                                    {avatar}
+                                                                </span>
+                                                            </FormLabel>
+                                                        </FormItem>
+                                                    ))}
+                                                </RadioGroup>
+                                            </div>
+                                        </div>
                                         <FormMessage />
                                     </FormItem>
                                 )}
