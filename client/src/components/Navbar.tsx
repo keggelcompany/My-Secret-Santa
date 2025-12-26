@@ -10,9 +10,33 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User, LogOut } from "lucide-react";
 
+const AVATAR_MAP: Record<string, string> = {
+  elf: "/figmaAssets/Emojis-editados/Elf.png",
+  "elf-girl": "/figmaAssets/Emojis-editados/Elf-Girl.png",
+  santa: "/figmaAssets/Emojis-editados/Santa.png",
+  reindeer: "/figmaAssets/Emojis-editados/Reindeer.png",
+  cookie: "/figmaAssets/Emojis-editados/Cookie.png",
+  milk: "/figmaAssets/Emojis-editados/Milk.png",
+  grinch: "/figmaAssets/Emojis-editados/Grinch.png",
+  "candy-cane": "/figmaAssets/Emojis-editados/Candy.png",
+  snowman: "/figmaAssets/Emojis-editados/Snowman.png",
+  stocking: "/figmaAssets/Emojis-editados/stocking.png",
+  nutcracker: "/figmaAssets/Emojis-editados/Nutcracker.png",
+  star: "/figmaAssets/Emojis-editados/Star.png",
+  ornament: "/figmaAssets/Emojis-editados/Ornament.png",
+  tree: "/figmaAssets/Emojis-editados/Tree.png",
+  fireworks: "/figmaAssets/Emojis-editados/Fireworks.png",
+  champagne: "/figmaAssets/Emojis-editados/Champagne.png",
+  scarf: "/figmaAssets/Emojis-editados/Scarf.png",
+  hat: "/figmaAssets/Emojis-editados/Hat.png",
+  gift: "/figmaAssets/Emojis-editados/Gift.png",
+  sleigh: "/figmaAssets/Emojis-editados/Sleigh.png",
+};
+
 export function Navbar() {
     const { user, logoutMutation } = useAuth();
     const [location, navigate] = useLocation();
+    console.log("Navbar user:", user);
 
     const handleLogout = () => {
         logoutMutation.mutate();
@@ -51,30 +75,16 @@ export function Navbar() {
                             </Button>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="relative h-10 w-10 rounded-full overflow-hidden border-2 border-white/20">
-                                        <span className="text-2xl">
-                                            {user.avatar === "elf" && "🧝"}
-                                            {user.avatar === "elf-girl" && "🧝‍♀️"}
-                                            {user.avatar === "santa" && "🎅"}
-                                            {user.avatar === "reindeer" && "🦌"}
-                                            {user.avatar === "cookie" && "🍪"}
-                                            {user.avatar === "milk" && "🥛"}
-                                            {user.avatar === "grinch" && "🤢"}
-                                            {user.avatar === "candy-cane" && "🍬"}
-                                            {user.avatar === "snowman" && "⛄"}
-                                            {user.avatar === "stocking" && "🧦"}
-                                            {user.avatar === "nutcracker" && "💂"}
-                                            {user.avatar === "star" && "⭐"}
-                                            {user.avatar === "ornament" && "🔮"}
-                                            {user.avatar === "tree" && "🎄"}
-                                            {user.avatar === "fireworks" && "🎆"}
-                                            {user.avatar === "champagne" && "🥂"}
-                                            {user.avatar === "scarf" && "🧣"}
-                                            {user.avatar === "hat" && "🧢"}
-                                            {user.avatar === "gift" && "🎁"}
-                                            {user.avatar === "sleigh" && "🛷"}
-                                            {!user.avatar && "👤"}
-                                        </span>
+                                    <Button variant="ghost" className="relative h-10 w-10 rounded-full border-2 border-white/20 bg-[#fefefe] p-0">
+                                        {user.avatar && AVATAR_MAP[user.avatar] ? (
+                                            <img 
+                                                src={AVATAR_MAP[user.avatar]} 
+                                                alt={user.avatar} 
+                                                className="w-full h-full object-contain rounded-full"
+                                            />
+                                        ) : (
+                                            <span className="text-2xl">👤</span>
+                                        )}
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="bg-white/95 backdrop-blur w-48">

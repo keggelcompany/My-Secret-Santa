@@ -29,26 +29,26 @@ import { Snow } from "@/components/Snow";
 import { ArrowLeft } from "lucide-react";
 
 const AVATAR_MAP: Record<string, string> = {
-  elf: "🧝",
-  "elf-girl": "🧝‍♀️",
-  santa: "🎅",
-  reindeer: "🦌",
-  cookie: "🍪",
-  milk: "🥛",
-  grinch: "🤢",
-  "candy-cane": "🍬",
-  snowman: "⛄",
-  stocking: "🧦",
-  nutcracker: "💂",
-  star: "⭐",
-  ornament: "🔮",
-  tree: "🎄",
-  fireworks: "🎆",
-  champagne: "🥂",
-  scarf: "🧣",
-  hat: "🧢",
-  gift: "🎁",
-  sleigh: "🛷",
+  elf: "/figmaAssets/Emojis-editados/Elf.png",
+  "elf-girl": "/figmaAssets/Emojis-editados/Elf-Girl.png",
+  santa: "/figmaAssets/Emojis-editados/Santa.png",
+  reindeer: "/figmaAssets/Emojis-editados/Reindeer.png",
+  cookie: "/figmaAssets/Emojis-editados/Cookie.png",
+  milk: "/figmaAssets/Emojis-editados/Milk.png",
+  grinch: "/figmaAssets/Emojis-editados/Grinch.png",
+  "candy-cane": "/figmaAssets/Emojis-editados/Candy.png",
+  snowman: "/figmaAssets/Emojis-editados/Snowman.png",
+  stocking: "/figmaAssets/Emojis-editados/stocking.png",
+  nutcracker: "/figmaAssets/Emojis-editados/Nutcracker.png",
+  star: "/figmaAssets/Emojis-editados/Star.png",
+  ornament: "/figmaAssets/Emojis-editados/Ornament.png",
+  tree: "/figmaAssets/Emojis-editados/Tree.png",
+  fireworks: "/figmaAssets/Emojis-editados/Fireworks.png",
+  champagne: "/figmaAssets/Emojis-editados/Champagne.png",
+  scarf: "/figmaAssets/Emojis-editados/Scarf.png",
+  hat: "/figmaAssets/Emojis-editados/Hat.png",
+  gift: "/figmaAssets/Emojis-editados/Gift.png",
+  sleigh: "/figmaAssets/Emojis-editados/Sleigh.png",
 };
 
 export default function AuthPage() {
@@ -216,16 +216,24 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Choose your Avatar</FormLabel>
 
-                        <div className="flex flex-col items-center justify-center p-6 mb-4 border-2 border-dashed border-holiday-green/20 rounded-xl bg-holiday-green/5 backdrop-blur-sm">
-                          <div className="text-6xl mb-2 animate-bounce-slow">
-                            {AVATAR_MAP[field.value] || "❓"}
+                        <div className="flex flex-col items-center justify-center p-6 mb-4 rounded-xl bg-[#fefefe] backdrop-blur-sm">
+                          <div className="mb-2 animate-bounce-slow">
+                            {AVATAR_MAP[field.value] ? (
+                              <img 
+                                src={AVATAR_MAP[field.value]} 
+                                alt={field.value} 
+                                className="w-32 h-32 object-contain"
+                              />
+                            ) : (
+                              <span className="text-6xl">❓</span>
+                            )}
                           </div>
                           <p className="text-sm font-bold text-holiday-green capitalize">
                             {field.value || "Select an avatar"}
                           </p>
                         </div>
 
-                        <div className="h-[240px] border rounded-md bg-white/50 overflow-y-auto custom-scrollbar">
+                        <div className="h-[240px] border rounded-md bg-[#fefefe] overflow-y-auto custom-scrollbar">
                           <div className="p-4">
                             <RadioGroup
                               onValueChange={field.onChange}
@@ -241,14 +249,18 @@ export default function AuthPage() {
                                     />
                                   </FormControl>
                                   <FormLabel
-                                    className={`flex flex-col items-center justify-center rounded-lg border-2 p-2 transition-all cursor-pointer hover:scale-105 h-full ${
+                                    className={`flex flex-col items-center justify-center rounded-lg p-2 transition-all cursor-pointer hover:scale-105 h-full ${
                                       field.value === avatar
-                                        ? "border-holiday-red bg-holiday-red/20 shadow-md"
-                                        : "border-transparent bg-white/80 hover:border-holiday-green/30"
+                                        ? "bg-holiday-red/20"
+                                        : "bg-transparent"
                                     }`}
                                   >
-                                    <span className="text-2xl mb-1 opacity-100">
-                                      {AVATAR_MAP[avatar]}
+                                    <span className="mb-1 opacity-100">
+                                      <img 
+                                        src={AVATAR_MAP[avatar]} 
+                                        alt={avatar} 
+                                        className="w-8 h-8 object-contain" 
+                                      />
                                     </span>
                                     <span
                                       className={`text-[10px] capitalize font-medium ${

@@ -284,34 +284,49 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-holiday-red text-white text-center relative overflow-hidden">
+      <section className="py-24 text-white text-center relative overflow-hidden">
+        {/* Blurred Gold Background - More Transparent */}
+        <div className="absolute inset-0 bg-[#1c442f]"></div>
+        
         <div className="container mx-auto px-4 relative z-10">
-          <h2 className="text-4xl md:text-6xl font-bold mb-8">
-            Create your first exchange
-          </h2>
-          <p className="text-xl md:text-2xl mb-12 max-w-2xl mx-auto opacity-90">
-            Start a new tradition with friends and family. It's free and easy!
-          </p>
-          <Button
-            onClick={() => navigate(user ? "/create" : "/auth")}
-            className="w-full md:w-auto bg-white text-holiday-red hover:bg-gray-100 rounded-full px-10 py-8 text-xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all uppercase tracking-wider"
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-6xl font-bold mb-8 drop-shadow-lg"
           >
-            Start Now
-          </Button>
-        </div>
-
-        {/* Decorative Background Elements */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-          <div className="absolute top-10 left-10 text-9xl">🎄</div>
-          <div className="absolute bottom-10 right-10 text-9xl">🎁</div>
+            Create your first event
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-xl md:text-2xl mb-12 max-w-2xl mx-auto opacity-90"
+          >
+            Start a new tradition with friends and family. It's free and easy!
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <Button
+              onClick={() => navigate(user ? "/create" : "/auth")}
+              className="w-full md:w-auto bg-white text-[#1f4c34] hover:bg-[#D83F31] hover:text-white rounded-full px-10 py-8 text-xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all uppercase tracking-wider"
+            >
+              Start Now
+            </Button>
+          </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-black/20 py-12 text-center text-white/60">
+      <footer className="bg-[#1f4c34] py-12 text-center text-white">
         <div className="container mx-auto px-4">
           <p className="text-lg font-medium">
-            &copy; 2024 Keggel Company. All rights reserved.
+            &copy; Keggel Company. All rights reserved.
           </p>
         </div>
       </footer>
