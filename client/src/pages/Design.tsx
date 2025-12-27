@@ -20,7 +20,7 @@ export const Design = (): JSX.Element => {
 
       {menuItems.map((item, index) => (
         <nav key={index} className={`absolute top-[61px] ${item.left}`}>
-          <button className="[font-family:'Montserrat',Helvetica] font-normal text-white text-xl tracking-[0] leading-[17.9px] whitespace-nowrap hover:opacity-80 transition-opacity">
+          <button className="font-montserrat font-normal text-white text-xl tracking-[0] leading-[17.9px] whitespace-nowrap hover:opacity-80 transition-opacity">
             {item.text}
           </button>
         </nav>
@@ -33,7 +33,7 @@ export const Design = (): JSX.Element => {
           src="/figmaAssets/logo-1.png"
         />
 
-        <div className="w-[89px] h-[34px] [font-family:'Montserrat',Helvetica] font-bold text-white text-[16.2px] tracking-[0] leading-[16.6px]">
+        <div className="w-[89px] h-[34px] font-montserrat font-bold text-white text-[16.2px] tracking-[0] leading-[16.6px]">
           My Secret <br />
           Santa
         </div>
@@ -127,19 +127,19 @@ export const Design = (): JSX.Element => {
       />
 
       <Button className="w-[135px] h-auto top-11 left-[1405px] bg-[#d83f31] hover:bg-[#c13629] flex flex-wrap items-center justify-center gap-[4.04px_4.04px] px-[24.25px] py-[16.17px] absolute rounded-[24.25px]">
-        <span className="relative flex-1 mt-[-0.40px] [font-family:'Futura_Hv_BT-Heavy',Helvetica] font-normal text-white text-[15.7px] text-center tracking-[0] leading-[normal]">
+        <span className="relative flex-1 mt-[-0.40px] font-sans font-bold text-white text-[15.7px] text-center tracking-[0] leading-[normal]">
           PLAY NOW
         </span>
       </Button>
 
       <Button className="w-[166px] h-[68px] top-[881px] left-[121px] bg-[#d83f31] hover:bg-[#c13629] flex flex-wrap items-center justify-center gap-[4.04px_4.04px] px-[24.25px] py-[16.17px] absolute rounded-[24.25px]">
-        <span className="relative flex-1 [font-family:'Futura_Hv_BT-Heavy',Helvetica] font-normal text-white text-[15.7px] text-center tracking-[0] leading-[normal]">
+        <span className="relative flex-1 font-sans font-bold text-white text-[15.7px] text-center tracking-[0] leading-[normal]">
           PLAY NOW
         </span>
       </Button>
 
       <Button className="w-[166px] h-[68px] top-[881px] left-[299px] bg-[#d3af64] hover:bg-[#c19d54] flex flex-wrap items-center justify-center gap-[4.04px_4.04px] px-[24.25px] py-[16.17px] absolute rounded-[24.25px]">
-        <span className="relative flex-1 [font-family:'Futura_Hv_BT-Heavy',Helvetica] font-normal text-white text-[15.7px] text-center tracking-[0] leading-[normal]">
+        <span className="relative flex-1 font-sans font-bold text-white text-[15.7px] text-center tracking-[0] leading-[normal]">
           VIEW DEMO
         </span>
       </Button>

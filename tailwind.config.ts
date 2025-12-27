@@ -53,6 +53,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ["Jost", "sans-serif"],
+        montserrat: ["Montserrat", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {

@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { Gift, Plus, Trash2, Eye, EyeOff, Users, Loader2, Download, ArrowLeft, ExternalLink } from "lucide-react";
 import { Snow } from "@/components/Snow";
+import { WrappedModal } from "@/components/WrappedModal";
 
 interface Participant {
   id: string;
@@ -46,6 +47,8 @@ export default function EventView() {
   const [showMatch, setShowMatch] = useState(false);
   const [newItem, setNewItem] = useState({ title: "", description: "", link: "" });
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [showWrappedModal, setShowWrappedModal] = useState(false);
+  const [wrappedImageUrl, setWrappedImageUrl] = useState<string | null>(null);
 
   const { data: joinData, isLoading: joinLoading, error: joinError } = useQuery({
     queryKey: ["join", params?.token],
@@ -312,16 +315,12 @@ export default function EventView() {
         ctx.fillText(`PARTICIPANTS:`, col1X, statsY + 80);
         ctx.fillText((joinData.participantCount || "?").toString(), col1X + 350, statsY + 80);
 
-        // Download
-        const link = document.createElement("a");
-        const fileName = `secret-santa-wrapped-${(joinData.event.name || "event").replace(/[^a-z0-9]/gi, "-").toLowerCase()}.png`;
-        link.download = fileName;
-        link.href = canvas.toDataURL("image/png");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        toast({ title: "Downloaded!", description: "Your Wrapped card has been saved." });
+        // Show Modal instead of auto-download
+        const dataUrl = canvas.toDataURL("image/png");
+        setWrappedImageUrl(dataUrl);
+        setShowWrappedModal(true);
+        
+        toast({ title: "Generated!", description: "Your Wrapped card is ready." });
       };
 
     } catch (error) {
@@ -598,9 +597,9 @@ export default function EventView() {
                 <p className="text-white/70 mb-6">The Secret Santa event has ended. Download your personalized Wrapped card!</p>
                 <Button
                   onClick={generateWrappedCard}
-                  className="bg-holiday-red hover:bg-holiday-red/90 text-white font-bold h-12 px-8 text-lg shadow-lg hover:shadow-xl transition-all"
+                  className="bg-holiday-red hover:bg-holiday-red/90 text-white font-bold h-auto py-4 px-8 text-lg shadow-lg hover:shadow-xl transition-all whitespace-normal"
                 >
-                  <Download className="w-5 h-5 mr-2" />
+                  <Download className="w-5 h-5 mr-2 shrink-0" />
                   Download Wrapped Card
                 </Button>
               </CardContent>
@@ -608,6 +607,12 @@ export default function EventView() {
           </motion.div>
         )}
       </div>
+      <WrappedModal 
+        isOpen={showWrappedModal} 
+        onClose={() => setShowWrappedModal(false)} 
+        imageUrl={wrappedImageUrl} 
+        eventName={event.name} 
+      />
     </div>
   );
 }

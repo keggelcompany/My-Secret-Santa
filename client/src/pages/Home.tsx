@@ -13,6 +13,8 @@ import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
 import { Event } from "@shared/schema";
+import { VideoModal } from "@/components/VideoModal";
+import { useState } from "react";
 
 interface UserEventsResponse {
   hosted: (Event & { magicToken?: string })[];
@@ -78,6 +80,7 @@ const faqs = [
 export default function Home() {
   const [, navigate] = useLocation();
   const { user } = useAuth();
+  const [showVideo, setShowVideo] = useState(false);
 
   const { data: userEvents } = useQuery<UserEventsResponse>({
     queryKey: ["/api/user/events"],
@@ -150,12 +153,8 @@ export default function Home() {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() =>
-                    document
-                      .getElementById("how-it-works")
-                      ?.scrollIntoView({ behavior: "smooth" })
-                  }
-                  className="w-full md:w-auto bg-transparent border-2 border-white text-white hover:bg-white hover:text-holiday-green rounded-full px-8 py-6 md:px-10 md:py-8 text-base md:text-lg font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all uppercase tracking-wider"
+                  onClick={() => setShowVideo(true)}
+                  className="w-full md:w-auto bg-[#D3AF64] border-none text-white hover:bg-white hover:text-[#D3AF64] rounded-full px-8 py-6 md:px-10 md:py-8 text-base md:text-lg font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all uppercase tracking-wider"
                 >
                   VIEW DEMO
                 </Button>
@@ -224,13 +223,23 @@ export default function Home() {
                 key={step.number}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
                 <Card className="bg-white/5 border-white/10 h-full backdrop-blur-sm hover:bg-white/10 transition-colors">
                   <CardContent className="p-6 text-center">
-                    <div className="w-12 h-12 bg-holiday-red rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto mb-4 shadow-lg">
-                      {step.number}
+                    <div className="w-24 h-24 mx-auto mb-6 flex items-center justify-center relative z-10">
+                      <motion.img 
+                        src={`/figmaAssets/bolas/${step.number}.png`} 
+                        alt={`Step ${step.number}`} 
+                        className="w-24 h-24 object-contain drop-shadow-lg"
+                        animate={{ y: [0, -8, 0] }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: index * 0.2, // Stagger the animation slightly
+                        }}
+                      />
                     </div>
                     <h3 className="text-holiday-gold font-bold text-lg mb-2">
                       {step.title}
@@ -330,6 +339,12 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      <VideoModal 
+        isOpen={showVideo} 
+        onClose={() => setShowVideo(false)} 
+        videoUrl="https://youtu.be/xxrpLojauno?si=akvveXdcfB3MlqxC" 
+      />
     </div>
   );
 }

@@ -60,8 +60,8 @@ export function Navbar() {
                 </Link>
 
                 <nav className="hidden md:flex items-center gap-8">
-                    <a href="/#how-it-works" className="text-white/90 hover:text-holiday-gold hover:underline underline-offset-4 transition-all text-lg font-normal">How it Works</a>
-                    <a href="/#faq" className="text-white/90 hover:text-holiday-gold hover:underline underline-offset-4 transition-all text-lg font-normal">FAQ</a>
+                    <a href="/#how-it-works" className="text-white/90 hover:text-holiday-gold hover:scale-105 transition-transform text-lg">How it Works</a>
+                    <a href="/#faq" className="text-white/90 hover:text-holiday-gold hover:scale-105 transition-transform text-lg">FAQ</a>
                 </nav>
 
                 <div className="flex items-center gap-4">
@@ -69,7 +69,7 @@ export function Navbar() {
                         <>
                             <Button
                                 onClick={() => navigate("/dashboard")}
-                                className="bg-holiday-red hover:bg-holiday-red/90 text-white rounded-full px-6 py-2 font-bold shadow-lg hover:shadow-xl transition-all uppercase tracking-wide"
+                                className="bg-holiday-red hover:bg-holiday-red/90 text-white rounded-full px-6 py-2 font-bold hover:scale-105 transition-all uppercase tracking-wide"
                             >
                                 DASHBOARD
                             </Button>
@@ -117,7 +117,7 @@ export function Navbar() {
                             </Button>
                             <Button
                                 onClick={() => navigate("/auth")}
-                                className="bg-holiday-red hover:bg-holiday-red/90 text-white rounded-full px-8 py-2 font-bold shadow-lg hover:shadow-xl transition-all uppercase tracking-wide"
+                                className="bg-holiday-red hover:bg-holiday-red/90 text-white rounded-full px-8 py-2 font-bold transition-all uppercase tracking-wide"
                             >
                                 Register
                             </Button>
