@@ -23,7 +23,7 @@ export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
     ...viteConfig.server,
     host: "0.0.0.0",
-    allowedHosts: true as const,
+    allowedHosts: viteConfig.server?.allowedHosts || [".replit.app"],
     middlewareMode: true,
     hmr: { server },
   };
