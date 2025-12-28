@@ -35,7 +35,7 @@ export default defineConfig({
   },
   server: {
     host: "0.0.0.0",
-    allowedHosts: [".replit.app", "contra-holiday-challenge-design--keggelnet.replit.app"],
+    allowedHosts: [".replit.app", ".replit.dev", "7f3fc17a-a133-4d26-b633-c1e5e4283620-00-h08qaivdbvcu.kirk.replit.dev"],
     fs: {
       strict: false,
       deny: ["**/.*"],
