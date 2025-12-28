@@ -299,7 +299,7 @@ export default function CreateEvent() {
                         key={index}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex gap-3 items-end bg-white/5 p-4 rounded-xl border border-white/5"
+                        className="flex flex-col md:flex-row gap-3 items-stretch md:items-end bg-white/5 p-4 rounded-xl border border-white/5"
                       >
                         <div className="flex-1 space-y-2">
                           <Label className="text-white/80 text-sm">Name</Label>
@@ -321,14 +321,16 @@ export default function CreateEvent() {
                           />
                         </div>
                         {participants.length > 1 && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleRemoveParticipant(index)}
-                            className="text-red-400 hover:text-red-300 hover:bg-red-400/10 h-10 w-10"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </Button>
+                          <div className="flex justify-end md:block">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleRemoveParticipant(index)}
+                              className="text-red-400 hover:text-red-300 hover:bg-red-400/10 h-10 w-10"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </Button>
+                          </div>
                         )}
                       </motion.div>
                     ))}
@@ -337,20 +339,20 @@ export default function CreateEvent() {
                   <Button
                     variant="outline"
                     onClick={handleAddParticipant}
-                    className="w-full border-dashed border-white/30 text-white hover:bg-white/10 hover:text-white h-12 text-lg bg-transparent"
+                    className="w-full border-dashed border-white/30 text-white hover:bg-white/10 hover:text-white h-auto py-3 md:h-12 text-lg bg-transparent whitespace-normal"
                   >
-                    <Plus className="w-5 h-5 mr-2" />
-                    Add Another Participant
+                    <Plus className="w-5 h-5 mr-2 shrink-0" />
+                    <span className="leading-tight">Add Another Participant</span>
                   </Button>
 
                   <div className="pt-6 border-t border-white/10">
                     <Button
                       onClick={handleSendInvites}
                       disabled={isLoading}
-                      className="w-full bg-holiday-red hover:bg-holiday-red/90 text-white h-14 text-xl font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                      className="w-full bg-holiday-red hover:bg-holiday-red/90 text-white h-auto py-4 md:h-14 text-lg md:text-xl font-bold rounded-xl shadow-lg hover:shadow-xl transition-all whitespace-normal"
                     >
-                      {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Send className="w-5 h-5 mr-2" />}
-                      Send Invites & Generate Matches
+                      {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2 shrink-0" /> : <Send className="w-5 h-5 mr-2 shrink-0" />}
+                      <span className="leading-tight">Send Invites & Generate Matches</span>
                     </Button>
                   </div>
                 </CardContent>

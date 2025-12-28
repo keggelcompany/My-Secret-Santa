@@ -293,11 +293,35 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 text-white text-center relative overflow-hidden">
+      <section className="py-12 md:py-24 text-white text-center relative overflow-hidden min-h-[400px] md:min-h-[600px] flex items-center justify-center">
         {/* Blurred Gold Background - More Transparent */}
         <div className="absolute inset-0 bg-[#1c442f]"></div>
         
-        <div className="container mx-auto px-4 relative z-10">
+        {/* Santa Gangster - Left Side */}
+        <motion.div
+          className="absolute left-4 lg:left-12 bottom-0 z-20 w-1/3 max-w-[400px] hidden md:block"
+          initial={{ x: -100, y: 100, opacity: 0 }}
+          whileInView={{ x: 0, y: 0, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+        >
+          <img 
+            src="/figmaAssets/CTA Section/santagangster.png" 
+            alt="Santa Gangster" 
+            className="w-full h-auto object-contain"
+          />
+        </motion.div>
+
+        {/* Christmas Tree - Right Side */}
+        <div className="absolute right-4 bottom-12 z-20 w-1/3 max-w-[350px] hidden md:block group">
+           <img 
+            src="/figmaAssets/CTA Section/christmastree.png" 
+            alt="Christmas Tree" 
+            className="w-full h-auto object-contain"
+          />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-30">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -323,7 +347,7 @@ export default function Home() {
           >
             <Button
               onClick={() => navigate(user ? "/create" : "/auth")}
-              className="w-full md:w-auto bg-white text-[#1f4c34] hover:bg-[#D83F31] hover:text-white rounded-full px-10 py-8 text-xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all uppercase tracking-wider"
+              className="w-full md:w-auto bg-[#D83F31] text-white hover:bg-white hover:text-[#1f4c34] rounded-full px-10 py-8 text-xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all uppercase tracking-wider"
             >
               Start Now
             </Button>
@@ -343,7 +367,7 @@ export default function Home() {
       <VideoModal 
         isOpen={showVideo} 
         onClose={() => setShowVideo(false)} 
-        videoUrl="https://youtu.be/xxrpLojauno?si=akvveXdcfB3MlqxC" 
+        videoUrl="https://youtu.be/E5h58XuLkn4" 
       />
     </div>
   );

@@ -9,8 +9,8 @@ interface VideoModalProps {
 
 export function VideoModal({ isOpen, onClose, videoUrl }: VideoModalProps) {
   // Extract video ID from URL if needed, or use embed URL directly
-  // The provided URL is https://youtu.be/xxrpLojauno?si=akvveXdcfB3MlqxC
-  // Embed URL should be https://www.youtube.com/embed/xxrpLojauno
+  // The provided URL is https://youtu.be/E5h58XuLkn4
+  // Embed URL should be https://www.youtube.com/embed/E5h58XuLkn4
   
   const getEmbedUrl = (url: string) => {
     try {

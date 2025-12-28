@@ -464,7 +464,7 @@ export default function EventView() {
                 <CardTitle className="text-white text-xl">Your Wishlist</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2 custom-scrollbar overflow-x-hidden">
                   {wishlistItems.length === 0 && (
                     <p className="text-white/40 text-center py-4 italic">No items yet. Add some below!</p>
                   )}
@@ -479,8 +479,14 @@ export default function EventView() {
                         <p className="text-white font-medium">{item.title}</p>
                         {item.description && <p className="text-white/60 text-sm">{item.description}</p>}
                         {item.link && (
-                          <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-holiday-gold text-sm hover:underline">
-                            {item.link}
+                          <a 
+                            href={item.link} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-holiday-gold text-sm hover:underline block truncate max-w-[200px] md:max-w-[300px]"
+                            title={item.link}
+                          >
+                            {item.link.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}...
                           </a>
                         )}
                       </div>
@@ -518,10 +524,10 @@ export default function EventView() {
                   <Button
                     onClick={() => addWishlistMutation.mutate()}
                     disabled={!newItem.title || addWishlistMutation.isPending}
-                    className="w-full bg-holiday-red hover:bg-holiday-red/90 text-white font-bold shadow-md hover:shadow-lg transition-all"
+                    className="w-full bg-holiday-red hover:bg-holiday-red/90 text-white font-bold shadow-md hover:shadow-lg transition-all h-auto py-3 whitespace-normal"
                   >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add to Wishlist
+                    <Plus className="w-4 h-4 mr-2 shrink-0" />
+                    <span className="leading-tight">Add to Wishlist</span>
                   </Button>
                 </div>
               </CardContent>
@@ -565,17 +571,17 @@ export default function EventView() {
                   <Button
                     onClick={() => endEventMutation.mutate()}
                     disabled={endEventMutation.isPending}
-                    className="w-full bg-holiday-gold hover:bg-holiday-gold/90 text-white font-bold h-12 text-lg shadow-lg hover:shadow-xl transition-all"
+                    className="w-full bg-holiday-gold hover:bg-holiday-gold/90 text-white font-bold h-auto py-4 md:h-12 text-base md:text-lg shadow-lg hover:shadow-xl transition-all whitespace-normal"
                   >
-                    End Event & Generate Cards
+                    <span className="leading-tight">End Event & Generate Cards</span>
                   </Button>
                 ) : (
                   <Button
                     onClick={generateWrappedCard}
-                    className="w-full bg-holiday-red hover:bg-holiday-red/90 text-white font-bold h-12 text-lg shadow-lg hover:shadow-xl transition-all"
+                    className="w-full bg-holiday-red hover:bg-holiday-red/90 text-white font-bold h-auto py-4 md:h-12 text-base md:text-lg shadow-lg hover:shadow-xl transition-all whitespace-normal"
                   >
-                    <Download className="w-5 h-5 mr-2" />
-                    Download Your Wrapped Card
+                    <Download className="w-5 h-5 mr-2 shrink-0" />
+                    <span className="leading-tight">Download Your Wrapped Card</span>
                   </Button>
                 )}
               </CardContent>
